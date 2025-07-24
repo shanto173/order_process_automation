@@ -18,7 +18,7 @@ from datetime import datetime  # 🔹 Import for timestamp
 from google.oauth2 import service_account
 import pytz
 import traceback
-from selenium.webdriver.common.keys import Keys 
+from selenium.webdriver.common.keys import Keys  
 import calendar
 
 # === Setup Logging ===
@@ -43,10 +43,12 @@ chrome_options.add_experimental_option("prefs", {
     "safebrowsing.enabled": True
 })
 
-pattern = "Released Summery"
+pattern = "INVOICE"
 
 def is_file_downloaded():
     return any(Path(download_dir).glob(f"*{pattern}*.xlsx"))
+
+
 
 while True:
     try:
@@ -66,32 +68,48 @@ while True:
 
         # === Step 2: Click user/company switch ===
         time.sleep(2)
-        try:
-            wait.until(EC.invisibility_of_element_located((By.CSS_SELECTOR, ".modal-backdrop")))
-        except:
-            pass
+        while True:
+            try:
+                # Wait for modal to disappear
+                wait.until(EC.invisibility_of_element_located((By.CSS_SELECTOR, ".modal-backdrop")))
+            except:
+                pass  # Modal didn't appear — safe to proceed
 
-        switcher_span = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR,
-            "div.o_menu_systray div.o_switch_company_menu > button > span"
-        )))
-        driver.execute_script("arguments[0].scrollIntoView(true);", switcher_span)
-        switcher_span.click()
-        time.sleep(2)
+            try:
+                # Step 1: Click company switcher
+                switcher_span = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR,
+                    "div.o_menu_systray div.o_switch_company_menu > button > span"
+                )))
+                driver.execute_script("arguments[0].scrollIntoView(true);", switcher_span)
+                switcher_span.click()
+                time.sleep(2)
 
-        # === Step 3: Click 'Zipper' company ===
-        log.info("Click 'Zipper' company ===")
-        target_div = wait.until(EC.element_to_be_clickable((By.XPATH,
-            "//div[contains(@class, 'log_into')][span[contains(text(), 'Zipper')]]"
-        )))
-        driver.execute_script("arguments[0].scrollIntoView(true);", target_div)
-        target_div.click()
-        time.sleep(2)
+                # Step 2: Click 'Zipper' company
+                log.info("Clicking 'Zipper' company...")
+                target_div = wait.until(EC.element_to_be_clickable((By.XPATH,
+                    "//div[contains(@class, 'log_into')][span[contains(text(), 'Zipper')]]"
+                )))
+                driver.execute_script("arguments[0].scrollIntoView(true);", target_div)
+                target_div.click()
+                time.sleep(2)  # Let the page reload after switching
+
+                # Step 3: Check if Zipper is now present on the page
+                if "Zipper" in driver.page_source:
+                    print("✅ 'Zipper' company is now active.")
+                    break
+                else:
+                    log.warning("'Zipper' not detected yet, retrying...")
+
+            except Exception as e:
+                log.error(f"❌ Error during switch attempt: {e}")
+            time.sleep(2)
 
         # step 4
         # === Trigger global search box by sending a keystroke ===
         log.info("=== Trigger global search box by sending a keystroke ===")
+        
         body = driver.find_element(By.TAG_NAME, "body")
-        body.send_keys("MRP Reports")  # or use Keys.A if needed
+        body.send_keys("MRP REPORTS")  # or use Keys.A if needed
         time.sleep(2)  # Wait for search box to appear
         
         # Step 5
@@ -102,42 +120,44 @@ while True:
 
         # Step 6
         # click on list of report
+        
         log.info("=== click on list of report ===")
         wait.until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[2]/div[2]/div/div/div/div/main/div/div/div/div/div/div[1]/div[2]/div/select"))).click() 
         time.sleep(4)
         
         # Step 7
-        # click on Released Summary of report
-        log.info("=== click on Released Summary of report ===")
-        wait.until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[2]/div[2]/div/div/div/div/main/div/div/div/div/div/div[1]/div[2]/div/select/option[20]"))).click() 
+        # click on Invoice summary of report
+        log.info("=== click on Invoice summary of report ===")
+        wait.until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[2]/div[2]/div/div/div/div/main/div/div/div/div/div/div[1]/div[2]/div/select/option[11]"))).click() 
         time.sleep(4)
+        
         
         # Step 7.1
         
         today = datetime.today()
-        # === 2. Apply the logic: use previous month if day < 5
+
         if today.day < 5:
+            # Use last day of previous month
             year = today.year if today.month > 1 else today.year - 1
             month = today.month - 1 if today.month > 1 else 12
+            last_day = calendar.monthrange(year, month)[1]
+            date_str = datetime(year, month, last_day).strftime("%d/%m/%Y")
         else:
-            year = today.year
-            month = today.month
-
-        # === 3. Build datetime strings
-        start_date = datetime(year, month, 1).strftime("%d/%m/%Y")
-        last_day = calendar.monthrange(year, month)[1]
-        end_date = datetime(year, month, last_day).strftime("%d/%m/%Y")
+            # Use today's date
+            date_str = today.strftime("%d/%m/%Y")
 
         # === 5. Send values to input boxes
         start_input_xpath = "/html/body/div[2]/div[2]/div/div/div/div/main/div/div/div/div/div/div[2]/div[2]/div/div/input"
         end_input_xpath   = "/html/body/div[2]/div[2]/div/div/div/div/main/div/div/div/div/div/div[3]/div[2]/div/div/input"
-        time.sleep(3) 
+
+        time.sleep(3)
+
         # === Clear and input datetime values ===
         # === Find the start input field and clear using Ctrl+A + Backspace
         start_input = driver.find_element(By.XPATH, start_input_xpath)
         start_input.send_keys(Keys.CONTROL + 'a')   # Select all
         start_input.send_keys(Keys.BACKSPACE)       # Delete
-        start_input.send_keys(start_date)           # Send new date
+        start_input.send_keys(date_str)           # Send new date
 
         time.sleep(2)
 
@@ -145,9 +165,8 @@ while True:
         end_input = driver.find_element(By.XPATH, end_input_xpath)
         end_input.send_keys(Keys.CONTROL + 'a')
         end_input.send_keys(Keys.BACKSPACE)
-        end_input.send_keys(end_date)
+        end_input.send_keys(date_str)
         time.sleep(2)
-        
         
         
         
@@ -155,8 +174,10 @@ while True:
         # download the report
         log.info("=== download the report ===")
         wait.until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[2]/div[2]/div/div/div/div/footer/footer/button[1]"))).click() 
-        time.sleep(30)
+        time.sleep(60)
        
+        # === Step 9: Confirm file downloaded ===
+        
         # === Step 9: Confirm file downloaded ===
         if is_file_downloaded():
             log.info("✅ File download complete!")
@@ -194,11 +215,9 @@ try:
     print(f"Latest file found: {latest_file.name}")
 
     # Load into DataFrame
-    df_released_pcs = pd.read_excel(latest_file,sheet_name=0)
+    df_production_pcs = pd.read_excel(latest_file,sheet_name=0)
     print("File loaded into DataFrame.")
 
-    df_released_usd = pd.read_excel(latest_file,sheet_name=1)
-    print("File loaded into DataFrame.")
     
     # Setup Google Sheets API
     scope = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
@@ -209,17 +228,18 @@ try:
     client = gspread.authorize(creds)
 
     # Open the sheet and paste the data
-    sheet_pcs = client.open_by_key("1uUcLk27P-wAtgGYrSy7rVFFnw3JpEiJKGAgZICbBd-k")
-    worksheet_pcs = sheet_pcs.worksheet("OA Data")
+    sheet_pcs = client.open_by_key("1acV7UrmC8ogC54byMrKRTaD9i1b1Cf9QZ-H1qHU5ZZc")
+    worksheet_pcs = sheet_pcs.worksheet("invoice_data")
 
 
-    if df_released_pcs.empty:
+
+    if df_production_pcs.empty:
         print("Skip: DataFrame is empty, not pasting to sheet.")
     else:
-         # Clear old content (optional)
+        # Clear old content (optional)
         worksheet_pcs.clear()
         # Paste new data
-        set_with_dataframe(worksheet_pcs, df_released_pcs)
+        set_with_dataframe(worksheet_pcs, df_production_pcs)
         print("Data pasted to Google Sheet (Sheet4).")
         # === ✅ Add timestamp to Y2 ===
         local_tz = pytz.timezone('Asia/Dhaka')
@@ -227,26 +247,9 @@ try:
         worksheet_pcs.update("AC2", [[f"{local_time}"]])
         print(f"Timestamp written to AC2: {local_time}")
     
-    # USD paste
     
-    sheet_usd = client.open_by_key("1uUcLk27P-wAtgGYrSy7rVFFnw3JpEiJKGAgZICbBd-k")
-    worksheet_usd = sheet_usd.worksheet("OA Value")
-    
-    if df_released_usd.empty:
-        print("Skip: DataFrame is empty, not pasting to sheet.")
-    else:
-        # Clear old content (optional)
-        worksheet_usd.batch_clear(['A:AC'])
-        # Paste new data
-        set_with_dataframe(worksheet_usd, df_released_usd)
-        print("Data pasted to Google Sheet (Sheet4).")
-        # === ✅ Add timestamp to Y2 ===
-        local_time1 = datetime.now(local_tz).strftime("%Y-%m-%d %H:%M:%S")
-        worksheet_usd.update("AC2", [[f"{local_time1}"]])
-        print(f"Timestamp written to AC2: {local_time1}")
-
+        
     
 
 except Exception as e:
     print(f"Error while pasting to Google Sheets: {e}")
-    
