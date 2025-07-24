@@ -1,0 +1,66 @@
+name: Run Order Process
+
+on:
+  workflow_dispatch:  # Manual run
+  schedule:
+  - cron: '0 2 * * *'     # 8:00 AM BD
+  - cron: '0 3 * * *'     # 9:00 AM BD
+  - cron: '0 4 * * *'     # 10:00 AM BD
+  - cron: '0 5 * * *'     # 11:00 AM BD
+  - cron: '0 6 * * *'     # 12:00 PM BD
+  - cron: '0 7 * * *'    # 1:00 PM BD
+  - cron: '0 10 * * *'    # 4:00 PM BD ✅
+  - cron: '0 11 * * *'    # 5:00 PM BD ✅
+  - cron: '0 12 * * *'    # 6:00 PM BD ✅
+  - cron: '0 13 * * *'    # 7:00 PM BD ✅
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          pip install selenium pandas gspread oauth2client gspread-dataframe webdriver-manager openpyxl pytz psycopg2 sqlalchemy
+
+      - name: Setup Chrome
+        uses: browser-actions/setup-chrome@latest
+
+      - name: Create creds file
+        run: |
+          echo "${{ secrets.GOOGLE_CREDENTIALS_BASE64 }}" | base64 -d > gcreds.json
+
+      
+      - name: Run downLoad_Invoice_till_current_month
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: gcreds.json
+        run: python downLoad_Invoice_till_current_month.py
+
+      - name: Run downLoad_Invoice_previous_month_last_date
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: gcreds.json
+        run: python downLoad_Invoice_previous_month_last_date.py
+
+
+      - name: Run MT_downLoad_Invoice_till_current_month
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: gcreds.json
+        run: python MT_downLoad_Invoice_till_current_month.py
+
+      - name: Run MT_downLoad_Invoice_previous_month_last_date
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: gcreds.json
+        run: python MT_downLoad_Invoice_previous_month_last_date.py
+      
+
+
+      - name: Clean up creds
+        run: rm gcreds.json
