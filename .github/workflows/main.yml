@@ -38,6 +38,17 @@ jobs:
         run: |
           echo "${{ secrets.GOOGLE_CREDENTIALS_BASE64 }}" | base64 -d > gcreds.json
 
+# ###########   Export overseas OA ############
+      - name: Run downLoad_Sales_OA
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: gcreds.json
+        run: python downLoad_Sales_OA.py
+
+      - name: Run MT_downLoad_Sales_OA
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: gcreds.json
+        run: python MT_downLoad_Sales_OA.py
+
       
       - name: Run downLoad_Invoice_till_current_month
         env:
