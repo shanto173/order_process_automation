@@ -194,7 +194,7 @@ while True:
 
         # === 2. Calculate the start date (first day of two months ago)
         # Adjust for year if current month is January or February
-        start_month = today.month - 2
+        start_month = today.month - 4
         start_year = today.year
         if start_month <= 0:
             start_month += 12
