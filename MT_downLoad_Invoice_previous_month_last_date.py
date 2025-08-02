@@ -137,12 +137,22 @@ while True:
         today = datetime.today()
 
         # === 2. Determine which month to use (based on edge-case logic)
-        if today.month > 1:
-            year = today.year
-            month = today.month - 1
+        if today.day < 2:
+            # Use current month - 2
+            if today.month > 2:
+                year = today.year
+                month = today.month - 2
+            else:
+                year = today.year - 1
+                month = 12 if today.month == 1 else 11
         else:
-            year = today.year - 1
-            month = 12
+            # Use current month - 1
+            if today.month > 1:
+                year = today.year
+                month = today.month - 1
+            else:
+                year = today.year - 1
+                month = 12
 
         # === 3. Get the last day of selected month
         last_day = calendar.monthrange(year, month)[1]
