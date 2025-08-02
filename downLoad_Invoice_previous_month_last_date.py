@@ -137,7 +137,7 @@ while True:
         today = datetime.today()
 
         # === 2. Determine which month to use (based on edge-case logic)
-        if today.day < 5:
+        if today.day < 2:
             # Use current month - 2
             if today.month > 2:
                 year = today.year
