@@ -9,10 +9,10 @@ on:
   - cron: '0 5 * * *'     # 11:00 AM BD
   - cron: '0 6 * * *'     # 12:00 PM BD
   - cron: '0 7 * * *'    # 1:00 PM BD
-  # - cron: '0 10 * * *'    # 4:00 PM BD ✅
-  # - cron: '0 11 * * *'    # 5:00 PM BD ✅
-  # - cron: '0 12 * * *'    # 6:00 PM BD ✅
-  # - cron: '0 13 * * *'    # 7:00 PM BD ✅
+  - cron: '0 10 * * *'    # 4:00 PM BD ✅
+  - cron: '0 11 * * *'    # 5:00 PM BD ✅
+  - cron: '0 12 * * *'    # 6:00 PM BD ✅
+  - cron: '0 13 * * *'    # 7:00 PM BD ✅
 
 jobs:
   run-script:
@@ -37,6 +37,15 @@ jobs:
       - name: Create creds file
         run: |
           echo "${{ secrets.GOOGLE_CREDENTIALS_BASE64 }}" | base64 -d > gcreds.json
+
+# downLoad_OA_Relased.py
+      - name: Run downLoad_OA_Relased
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: gcreds.json
+        run: python downLoad_OA_Relased.py
+
+
+          
 
 # ###########   Export overseas OA ############
       - name: Run downLoad_Sales_OA
