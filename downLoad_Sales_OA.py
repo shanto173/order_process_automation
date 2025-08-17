@@ -131,6 +131,11 @@ while True:
         wait.until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[2]/div[2]/div/div/div/div/main/div/div/div/div[3]/div[3]/div/div[2]/button[1]"))).click() 
         time.sleep(4)
         
+        # Add another button
+        log.info("=== Click on custome filter first search box salesperson to change it value ===")
+        wait.until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[2]/div[2]/div/div/div/div/main/div/div/div/div[3]/div[4]/div/div[2]/button[1]"))).click() 
+        time.sleep(4)
+        
         # Delete the first condition
         log.info("=== Click on custome filter first search box salesperson to change it value ===")
         wait.until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[2]/div[2]/div/div/div/div/main/div/div/div/div[2]/div/div[2]/button[3]"))).click() 
@@ -250,6 +255,35 @@ while True:
         log.info("=== Click on the is between condition Option ===")
         wait.until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[2]/div[2]/div/div/div/div/main/div/div/div/div[4]/div/div[1]/div[3]/select/option[5]"))).click() 
         time.sleep(3) 
+        
+        
+        ### Step 12
+            
+        log.info("=== Click on custome filter first search box salesperson to change it value ===")
+        wait.until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[2]/div[2]/div/div/div/div/main/div/div/div/div[5]/div/div[1]/div[1]/div/div/span"))).click() 
+        time.sleep(3)
+        
+        log.info("=== click on search Box and send some key like Order Date ===")
+        input_box = driver.find_element(By.XPATH, "/html/body/div[2]/div[2]/div[2]/div[1]/div[1]/div[2]/input")
+        # Send the text "Sales Type"
+        input_box.send_keys("Status")
+        time.sleep(2)
+        # Step 11
+        log.info("=== Click on sales Type Option ===")
+        wait.until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[2]/div[2]/div[2]/div[1]/div[2]/ul/li[1]/button"))).click() 
+        time.sleep(3)
+        
+        
+        # Step 13
+        log.info("=== Click on the is between condition Option ===")
+        wait.until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[2]/div[2]/div/div/div/div/main/div/div/div/div[5]/div/div[1]/div[3]/select"))).click() 
+        time.sleep(3) 
+       
+        log.info("=== Click on the is between condition Option ===")
+        wait.until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[2]/div[2]/div/div/div/div/main/div/div/div/div[5]/div/div[1]/div[3]/select/option[3]"))).click() 
+        time.sleep(3) 
+        
+        
        
        ## Click on any to all
         log.info("=== Click on Any to All option ===")
