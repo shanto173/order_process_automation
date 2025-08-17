@@ -303,7 +303,7 @@ while True:
             time.sleep(2)
 
             log.info("=== Select custom template 0_ABCD_arifuls ===")
-            wait.until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[2]/div[2]/div/div/div/div/main/div/div[2]/div[3]/div/select/option[2]"))).click()
+            wait.until(EC.element_to_be_clickable((By.XPATH, "/html/body/div[2]/div[2]/div/div/div/div/main/div/div[2]/div[3]/div/select/option[3]"))).click()
             time.sleep(2)
 
             log.info("=== Final export button click ===")
