@@ -59,26 +59,26 @@ jobs:
         run: python MT_downLoad_Sales_OA.py
 
       
-      - name: Run downLoad_Invoice_till_current_month
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS: gcreds.json
-        run: python downLoad_Invoice_till_current_month.py
+      # - name: Run downLoad_Invoice_till_current_month
+      #   env:
+      #     GOOGLE_APPLICATION_CREDENTIALS: gcreds.json
+      #   run: python downLoad_Invoice_till_current_month.py
 
-      - name: Run downLoad_Invoice_previous_month_last_date
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS: gcreds.json
-        run: python downLoad_Invoice_previous_month_last_date.py
+      # - name: Run downLoad_Invoice_previous_month_last_date
+      #   env:
+      #     GOOGLE_APPLICATION_CREDENTIALS: gcreds.json
+      #   run: python downLoad_Invoice_previous_month_last_date.py
 
 
-      - name: Run MT_downLoad_Invoice_till_current_month
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS: gcreds.json
-        run: python MT_downLoad_Invoice_till_current_month.py
+      # - name: Run MT_downLoad_Invoice_till_current_month
+      #   env:
+      #     GOOGLE_APPLICATION_CREDENTIALS: gcreds.json
+      #   run: python MT_downLoad_Invoice_till_current_month.py
 
-      - name: Run MT_downLoad_Invoice_previous_month_last_date
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS: gcreds.json
-        run: python MT_downLoad_Invoice_previous_month_last_date.py
+      # - name: Run MT_downLoad_Invoice_previous_month_last_date
+      #   env:
+      #     GOOGLE_APPLICATION_CREDENTIALS: gcreds.json
+      #   run: python MT_downLoad_Invoice_previous_month_last_date.py
       
 
 
